@@ -37,6 +37,10 @@ namespace Renamepler
     //8. Editing of rules
     //  REQUIRES: New editing form
     //9. Add "ignore" rules to the app
+    //10. Cancel the operation after viewing stats (if copy option is set)
+    //  REQUIRES: Deletion of copied files
+    //11. Retention of custom "groups" from search string
+    //  REQUIRES: Denote custom groups with a delimiter, and carry over whatever is inside that within the matched string
 
     //REFACTORING:
     //1. Move the name sanitization (regex, default name check, etc.) to a static function
