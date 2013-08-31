@@ -149,3 +149,5 @@ $RECYCLE.BIN/
 
 # Mac crap
 .DS_Store
+Renamepler/obj/x86/Debug/Renamepler.csproj.FileListAbsolute.txt
+Renamepler/obj/x86/Debug/DesignTimeResolveAssemblyReferencesInput.cache
