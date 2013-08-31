@@ -45,8 +45,7 @@ namespace Renamepler
     //  REQUIRES: SaveRulesWindow logic moved into Start
 
     //BUGS:
-    //1. Resizing the main window is not fluid
-    //  REQUIRES: Resizing text box?
+
     public partial class Core : Form
     {
         public static string _appData;

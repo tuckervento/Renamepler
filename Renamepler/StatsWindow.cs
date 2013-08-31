@@ -51,7 +51,7 @@ namespace Renamepler
                     this._display += Environment.NewLine + Environment.NewLine + "FILE(S) RENAMED:";
 
                     foreach (var name in nameList)
-                        this._display += Environment.NewLine + "\t" + name.Value + "\t--->\t" + name.Key;
+                        this._display += Environment.NewLine + Environment.NewLine + "\t" + name.Value + "\t--->" + Environment.NewLine + "\t" + name.Key;
                 }
             }
 
@@ -70,7 +70,7 @@ namespace Renamepler
                         this._display += Environment.NewLine + Environment.NewLine + "FILE(S) RENAMED:";
 
                         foreach (var name in nameList)
-                            this._display += Environment.NewLine + "\t" + name.Value + "\t--->\t" + name.Key;
+                            this._display += Environment.NewLine + Environment.NewLine + "\t" + name.Value + "\t--->" + Environment.NewLine + "\t" + name.Key;
                     }
                 }
             }

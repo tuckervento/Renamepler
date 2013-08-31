@@ -39,11 +39,11 @@
             this.directoryPanel = new System.Windows.Forms.Panel();
             this.directoryBox = new System.Windows.Forms.TextBox();
             this.secondPanel = new System.Windows.Forms.Panel();
+            this.loadPreviousButton = new System.Windows.Forms.Button();
             this.exitButton = new System.Windows.Forms.Button();
             this.loadRulesButton = new System.Windows.Forms.Button();
             this.saveRulesButton = new System.Windows.Forms.Button();
             this.optionsButton = new System.Windows.Forms.Button();
-            this.loadPreviousButton = new System.Windows.Forms.Button();
             this.directoryPanel.SuspendLayout();
             this.secondPanel.SuspendLayout();
             this.SuspendLayout();
@@ -72,17 +72,21 @@
             // 
             // ruleBox
             // 
+            this.ruleBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.ruleBox.Location = new System.Drawing.Point(12, 32);
             this.ruleBox.Name = "ruleBox";
             this.ruleBox.ReadOnly = true;
-            this.ruleBox.Size = new System.Drawing.Size(496, 95);
+            this.ruleBox.Size = new System.Drawing.Size(497, 123);
             this.ruleBox.TabIndex = 5;
             this.ruleBox.Text = "";
             this.toolTip.SetToolTip(this.ruleBox, "This is a list of all current renaming rules");
             // 
             // clearButton
             // 
-            this.clearButton.Location = new System.Drawing.Point(12, 133);
+            this.clearButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.clearButton.Location = new System.Drawing.Point(13, 161);
             this.clearButton.Name = "clearButton";
             this.clearButton.Size = new System.Drawing.Size(75, 23);
             this.clearButton.TabIndex = 6;
@@ -93,7 +97,8 @@
             // 
             // goButton
             // 
-            this.goButton.Location = new System.Drawing.Point(433, 3);
+            this.goButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.goButton.Location = new System.Drawing.Point(434, 3);
             this.goButton.Name = "goButton";
             this.goButton.Size = new System.Drawing.Size(75, 23);
             this.goButton.TabIndex = 7;
@@ -110,7 +115,7 @@
             this.directoryPanel.Controls.Add(this.directoryBox);
             this.directoryPanel.Location = new System.Drawing.Point(0, 3);
             this.directoryPanel.Name = "directoryPanel";
-            this.directoryPanel.Size = new System.Drawing.Size(523, 27);
+            this.directoryPanel.Size = new System.Drawing.Size(524, 27);
             this.directoryPanel.TabIndex = 1;
             // 
             // directoryBox
@@ -120,7 +125,7 @@
             this.directoryBox.Location = new System.Drawing.Point(115, 5);
             this.directoryBox.Name = "directoryBox";
             this.directoryBox.ReadOnly = true;
-            this.directoryBox.Size = new System.Drawing.Size(393, 20);
+            this.directoryBox.Size = new System.Drawing.Size(394, 20);
             this.directoryBox.TabIndex = 2;
             // 
             // secondPanel
@@ -141,13 +146,25 @@
             this.secondPanel.Enabled = false;
             this.secondPanel.Location = new System.Drawing.Point(0, 34);
             this.secondPanel.Name = "secondPanel";
-            this.secondPanel.Size = new System.Drawing.Size(523, 162);
+            this.secondPanel.Size = new System.Drawing.Size(524, 190);
             this.secondPanel.TabIndex = 4;
+            // 
+            // loadPreviousButton
+            // 
+            this.loadPreviousButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.loadPreviousButton.Location = new System.Drawing.Point(256, 161);
+            this.loadPreviousButton.Name = "loadPreviousButton";
+            this.loadPreviousButton.Size = new System.Drawing.Size(131, 23);
+            this.loadPreviousButton.TabIndex = 5;
+            this.loadPreviousButton.Text = "Load Previous Results";
+            this.loadPreviousButton.UseVisualStyleBackColor = true;
+            this.loadPreviousButton.Click += new System.EventHandler(this.loadPreviousButton_Click);
             // 
             // exitButton
             // 
+            this.exitButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.exitButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.exitButton.Location = new System.Drawing.Point(433, 133);
+            this.exitButton.Location = new System.Drawing.Point(434, 161);
             this.exitButton.Name = "exitButton";
             this.exitButton.Size = new System.Drawing.Size(75, 23);
             this.exitButton.TabIndex = 10;
@@ -157,7 +174,8 @@
             // 
             // loadRulesButton
             // 
-            this.loadRulesButton.Location = new System.Drawing.Point(174, 133);
+            this.loadRulesButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.loadRulesButton.Location = new System.Drawing.Point(175, 161);
             this.loadRulesButton.Name = "loadRulesButton";
             this.loadRulesButton.Size = new System.Drawing.Size(75, 23);
             this.loadRulesButton.TabIndex = 9;
@@ -167,7 +185,8 @@
             // 
             // saveRulesButton
             // 
-            this.saveRulesButton.Location = new System.Drawing.Point(93, 133);
+            this.saveRulesButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.saveRulesButton.Location = new System.Drawing.Point(94, 161);
             this.saveRulesButton.Name = "saveRulesButton";
             this.saveRulesButton.Size = new System.Drawing.Size(75, 23);
             this.saveRulesButton.TabIndex = 5;
@@ -177,7 +196,8 @@
             // 
             // optionsButton
             // 
-            this.optionsButton.Location = new System.Drawing.Point(352, 3);
+            this.optionsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.optionsButton.Location = new System.Drawing.Point(353, 3);
             this.optionsButton.Name = "optionsButton";
             this.optionsButton.Size = new System.Drawing.Size(75, 23);
             this.optionsButton.TabIndex = 8;
@@ -185,27 +205,17 @@
             this.optionsButton.UseVisualStyleBackColor = true;
             this.optionsButton.Click += new System.EventHandler(this.optionsButton_Click);
             // 
-            // loadPreviousButton
-            // 
-            this.loadPreviousButton.Location = new System.Drawing.Point(255, 133);
-            this.loadPreviousButton.Name = "loadPreviousButton";
-            this.loadPreviousButton.Size = new System.Drawing.Size(131, 23);
-            this.loadPreviousButton.TabIndex = 5;
-            this.loadPreviousButton.Text = "Load Previous Results";
-            this.loadPreviousButton.UseVisualStyleBackColor = true;
-            this.loadPreviousButton.Click += new System.EventHandler(this.loadPreviousButton_Click);
-            // 
-            // Start
+            // Core
             // 
             this.AcceptButton = this.goButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlDark;
             this.CancelButton = this.exitButton;
-            this.ClientSize = new System.Drawing.Size(520, 198);
+            this.ClientSize = new System.Drawing.Size(521, 226);
             this.Controls.Add(this.secondPanel);
             this.Controls.Add(this.directoryPanel);
-            this.Name = "Start";
+            this.Name = "Core";
             this.Text = "Renamepler";
             this.directoryPanel.ResumeLayout(false);
             this.directoryPanel.PerformLayout();

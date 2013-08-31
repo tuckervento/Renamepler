@@ -42,14 +42,14 @@
             this.statsBox.Location = new System.Drawing.Point(0, 0);
             this.statsBox.Name = "statsBox";
             this.statsBox.ReadOnly = true;
-            this.statsBox.Size = new System.Drawing.Size(377, 274);
+            this.statsBox.Size = new System.Drawing.Size(523, 294);
             this.statsBox.TabIndex = 0;
             this.statsBox.Text = "";
             // 
             // saveButton
             // 
             this.saveButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.saveButton.Location = new System.Drawing.Point(109, 275);
+            this.saveButton.Location = new System.Drawing.Point(182, 295);
             this.saveButton.Name = "saveButton";
             this.saveButton.Size = new System.Drawing.Size(78, 23);
             this.saveButton.TabIndex = 1;
@@ -65,7 +65,7 @@
             // 
             this.closeButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.closeButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.closeButton.Location = new System.Drawing.Point(193, 275);
+            this.closeButton.Location = new System.Drawing.Point(266, 295);
             this.closeButton.Name = "closeButton";
             this.closeButton.Size = new System.Drawing.Size(75, 23);
             this.closeButton.TabIndex = 2;
@@ -80,7 +80,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlDark;
             this.CancelButton = this.closeButton;
-            this.ClientSize = new System.Drawing.Size(378, 298);
+            this.ClientSize = new System.Drawing.Size(524, 318);
             this.Controls.Add(this.closeButton);
             this.Controls.Add(this.saveButton);
             this.Controls.Add(this.statsBox);
