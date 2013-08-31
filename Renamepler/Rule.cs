@@ -5,27 +5,15 @@ using System.Text;
 
 namespace Renamepler
 {
-    class Rule
+    [Serializable]
+    public class Rule
     {
         private string _find;
         private string _rename;
+        private int _numberOfNumbers;
         private bool _numbered = false;
         private bool _continuousNumbering = false;
         private int _currentNumber = 0;
-
-        /// <summary>
-        /// Creates a Rule object.
-        /// </summary>
-        /// <param name="p_find">the search pattern for the rule</param>
-        /// <param name="p_rename">the renaming pattern for the rule</param>
-        public Rule(string p_find, string p_rename)
-        {
-            this._find = p_find;
-            this._rename = p_rename;
-
-            if (this._rename.Contains('#'))
-                this._numbered = true;
-        }
 
         /// <summary>
         /// Creates a Rule object.
@@ -39,9 +27,35 @@ namespace Renamepler
             this._rename = p_rename;
 
             if (this._rename.Contains('#'))
+            {
                 this._numbered = true;
+                this._numberOfNumbers = this._rename.Count(s => s == '#');
+            }
 
             this._continuousNumbering = p_cont;
+        }
+
+        /// <summary>
+        /// Resets the number of the naming pattern.
+        /// </summary>
+        public void ResetNumbering() { if (!this._continuousNumbering) this._currentNumber = 0; }
+
+        /// <summary>
+        /// Indicates whether the renaming pattern contains numbering.
+        /// </summary>
+        public bool Numbered
+        {
+            get { return this._numbered; }
+            set { }
+        }
+
+        /// <summary>
+        /// Number of digits in the renaming pattern.
+        /// </summary>
+        public int NumberLength
+        {
+            get { return this._numberOfNumbers; }
+            set { }
         }
 
         /// <summary>
@@ -54,9 +68,9 @@ namespace Renamepler
         }
 
         /// <summary>
-        /// Indicates the current number of the numbering system, and increments to the next one.
+        /// The next number in the numbering pattern.
         /// </summary>
-        public int CurrentNumber
+        public int NextNumber
         {
             get { return ++this._currentNumber; }
             set { }

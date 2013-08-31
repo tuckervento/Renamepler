@@ -94,14 +94,14 @@ namespace Renamepler
         /// <summary>
         /// Creates an object containing necessary statistics for each Renamepler operation.
         /// </summary>
-        /// <param name="p_ruleSet">the set of rules for the current execution</param>
-        public RenamingStats(Dictionary<string, string> p_ruleSet)
+        /// <param name="p_ruleSet">the set of rules for the current operation</param>
+        public RenamingStats(List<Rule> p_ruleSet)
         {
             this._perRule = new Dictionary<string, InternalStats>();
             this._overall = new InternalStats();
 
-            foreach (var pair in p_ruleSet)
-                this._perRule.Add(pair.Key, new InternalStats());
+            foreach (var rule in p_ruleSet)
+                this._perRule.Add(rule.FindPattern, new InternalStats());
         }
 
         /// <summary>

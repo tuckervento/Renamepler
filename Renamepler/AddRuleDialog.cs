@@ -16,29 +16,26 @@ namespace Renamepler
     public partial class AddRuleDialog : Form
     {
         private RuleSet _rules;
-        private Dictionary<string, KeyValuePair<bool, KeyValuePair<int, int>>> _numbered;
 
         /// <summary>
         /// Creates a dialog allowing the user to enter renaming rules.
         /// </summary>
         /// <param name="p_rules">current rule set</param>
         /// <param name="p_numbered">current "numbered" rule list</param>
-        public AddRuleDialog(ref RuleSet p_rules, ref Dictionary<string, KeyValuePair<bool, KeyValuePair<int, int>>> p_numbered)
+        public AddRuleDialog(ref RuleSet p_rules)//, ref Dictionary<string, KeyValuePair<bool, KeyValuePair<int, int>>> p_numbered)
         {
             InitializeComponent();
             this._rules = p_rules;
-            this._numbered = p_numbered;
+            //this._numbered = p_numbered;
         }
 
         private void addButton_Click(object sender, EventArgs e)
         {
             if (!regexCheck.Checked) //if the Regex option is selected, we assume that the user properly escaped any necessary characters
                 findBox.Text = Regex.Escape(findBox.Text);
-            var check = this._rules.AddRule(findBox.Text, replaceBox.Text);
+            var check = this._rules.AddRule(findBox.Text, replaceBox.Text, this.continuousCheck.Checked);
             switch (check){ //handle return value from AddRule
                 case 0:
-                    if (replaceBox.Text.Contains('#'))
-                        _numbered.Add(replaceBox.Text, new KeyValuePair<bool, KeyValuePair<int, int>>(continuousCheck.Checked, new KeyValuePair<int, int>(replaceBox.Text.Count(s => s == '#'), 0)));
                     this.Close();
                     this.Dispose();
                     break;

@@ -12,9 +12,9 @@ namespace Renamepler
     [Serializable]
     public class RuleSet
     {
-        private Dictionary<string, string> _rules;
+        private Dictionary<string, string> _ruleDict;
         private Dictionary<string, List<string>> _fileList;
-        private List<Rule> _ruleList;
+        private List<Rule> _rules;
         //key is search, value is rename
         private string _ruleDisplay;
         private string _setName;
@@ -24,38 +24,15 @@ namespace Renamepler
         /// </summary>
         public RuleSet()
         {
-            this._rules = new Dictionary<string, string>();
+            this._ruleDict = new Dictionary<string, string>();
             this._fileList = new Dictionary<string, List<string>>();
-            this._ruleList = new List<Rule>();
+            this._rules = new List<Rule>();
             this._ruleDisplay = "";
             this._setName = "Unnamed";
         }
 
         /// <summary>
         /// Adds a rule to the rule set.
-        /// </summary>
-        /// <param name="p_find">the search pattern for this rule</param>
-        /// <param name="p_rename">the renaming pattern for this rule</param>
-        /// <returns>0 - successful add, 1 - illegal character, 2 - p_find exists in the rule set, 3 - p_find or p_replace is empty, -1 - attempting to use an unsupported feature</returns>
-        public int AddRule(string p_find, string p_rename)
-        {
-            if (p_rename.Contains('&'))
-                return -1;
-            Regex containsABadCharacter = new Regex("[" + Regex.Escape(new string(System.IO.Path.GetInvalidPathChars())) + "]");
-            if (containsABadCharacter.IsMatch(p_find) || containsABadCharacter.IsMatch(p_rename)) { return 1; };
-            if (p_find.Trim().Equals("") || p_rename.Trim().Equals("")) { return 3; };
-            if (!this._rules.Keys.Contains(p_find))
-            {
-                this._rules.Add(p_find, p_rename);
-                this._ruleDisplay += p_find + "\t\t-->\t\t" + p_rename + "\n";
-                return 0;
-            }
-            else
-                return 2;
-        }
-
-        /// <summary>
-        /// Adds a rule to the rule set. (Uses Rule objects)
         /// </summary>
         /// <param name="p_find">the search pattern for this rule</param>
         /// <param name="p_rename">the renaming pattern for this rule</param>
@@ -70,12 +47,22 @@ namespace Renamepler
             if (p_find.Trim().Equals("") || p_rename.Trim().Equals("")) { return 3; };
             if (!this.CheckIfExists(p_find))
             {
-                this._ruleList.Add(new Rule(p_find, p_rename, p_contNumb));
+                this._rules.Add(new Rule(p_find, p_rename, p_contNumb));
                 this._ruleDisplay += p_find + "\t\t-->\t\t" + p_rename + "\n";
                 return 0;
             }
             else
                 return 2;
+        }
+
+        /// <summary>
+        /// Resets numbering of any naming patterns not using continuous numbering.
+        /// </summary>
+        public void CleanNumbers()
+        {
+            foreach (var rule in this._rules)
+                if (!rule.ContinuousNumbering)
+                    rule.ResetNumbering();
         }
 
         /// <summary>
@@ -86,10 +73,19 @@ namespace Renamepler
         {
             bool check = false;
 
-            foreach (var rule in this._ruleList)
+            foreach (var rule in this._rules)
                 check = rule.FindPattern.Equals(p_find);
 
             return check;
+        }
+
+        /// <summary>
+        /// A list of all current rules.
+        /// </summary>
+        public List<Rule> RuleList
+        {
+            get { return this._rules; }
+            set { }
         }
 
         /// <summary>
@@ -132,10 +128,5 @@ namespace Renamepler
         /// Returns a bool indicating whether or not the rule set is empty.
         /// </summary>
         public bool IsEmpty() { return (this._rules.Count == 0); }
-
-        /// <summary>
-        /// Returns the rule set as a dictionary, keys are search strings and values are the associated renaming pattern.
-        /// </summary>
-        public Dictionary<string, string> GetRules() { return this._rules; }
     }
 }

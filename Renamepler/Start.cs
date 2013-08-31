@@ -38,11 +38,7 @@ namespace Renamepler
     //  REQUIRES: New editing form
 
     //REFACTORING:
-    //1. Refactor numbered naming data structure, numberedNames is messy and inefficient
-    //  REQUIRES: A new class WITHIN RULESET
-    //  REQUIRES: Methods to clean up the data structure (reset numbers), get next number, etc.
-    //  REQUIRES: Storage of the # string within the new name, to remove redundant RegEx during every match
-    //3. Move the name sanitization (regex, default name check, etc.) to a static function
+    //1. Move the name sanitization (regex, default name check, etc.) to a static function
     //  REQUIRES: New function
 
     //BUGS:
@@ -53,14 +49,11 @@ namespace Renamepler
         private string _path;
         private RuleSet _rules;
         private RenamingStats _stats;
-        private Dictionary<string, KeyValuePair<bool, KeyValuePair<int, int>>> _numberedNames;
-        //renaming pattern, continuous bool, number of numbers, current number (starts at 0)
 
         public Start()
         {
             InitializeComponent();
             this._rules = new RuleSet();
-            this._numberedNames = new Dictionary<string, KeyValuePair<bool, KeyValuePair<int, int>>>();
             _appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)+Path.DirectorySeparatorChar+"Bitslave"+Path.DirectorySeparatorChar+"Renamepler";
 
             //Creates the appdata directory on initial run
@@ -90,7 +83,6 @@ namespace Renamepler
                     //New rules and numbered names objects
                     this._rules = new RuleSet();
                     this.ruleBox.Text = this._rules.ToString();
-                    this._numberedNames = new Dictionary<string, KeyValuePair<bool, KeyValuePair<int, int>>>();
                 }
             }
         }
@@ -101,13 +93,12 @@ namespace Renamepler
             {
                 this.ruleBox.Clear();
                 this._rules = new RuleSet();
-                this._numberedNames = new Dictionary<string, KeyValuePair<bool, KeyValuePair<int, int>>>();
             }
         }
 
         private void ruleButton_Click(object sender, EventArgs e)
         {
-            var dialog = new AddRuleDialog(ref this._rules, ref this._numberedNames);
+            var dialog = new AddRuleDialog(ref this._rules);
             dialog.ShowDialog();
 
             this.ruleBox.Text = this._rules.ToString();
@@ -121,21 +112,21 @@ namespace Renamepler
         /// <param name="p_find">string to find matching names</param>
         /// <param name="p_rename">string containing renaming format</param>
         /// <param name="p_continuous">boolean indicating continuous numbering pattern</param>
-        public int AddRule(string p_find, string p_rename, bool p_continuous)
-        {
-            var check = this._rules.AddRule(p_find, p_rename);
+        //public int AddRule(string p_find, string p_rename, bool p_continuous)
+        //{
+        //    var check = this._rules.AddRule(p_find, p_rename);
 
-            if (check == 0)
-            {
-                this.ruleBox.Text = this._rules.ToString();
-                if (p_rename.Contains('#'))
-                {
-                    _numberedNames.Add(p_rename, new KeyValuePair<bool, KeyValuePair<int, int>>(p_continuous, new KeyValuePair<int,int>(p_rename.Count(s => s == '#'), 0)));
-                }
-            }
+        //    if (check == 0)
+        //    {
+        //        this.ruleBox.Text = this._rules.ToString();
+        //        if (p_rename.Contains('#'))
+        //        {
+        //            _numberedNames.Add(p_rename, new KeyValuePair<bool, KeyValuePair<int, int>>(p_continuous, new KeyValuePair<int,int>(p_rename.Count(s => s == '#'), 0)));
+        //        }
+        //    }
 
-            return check;
-        }
+        //    return check;
+        //}
 
         private void goButton_Click(object sender, EventArgs e)
         {
@@ -166,14 +157,14 @@ namespace Renamepler
                     {
                         this._rules.SetName = namingDialog.MessageText;
                         namingDialog.Dispose(); //Only dispose after grabbing the message text
-                        this._stats = new RenamingStats(this._rules.GetRules());
+                        this._stats = new RenamingStats(this._rules.RuleList);
                         this.Execute();
                     }
                 }
             }
             else
             {
-                this._stats = new RenamingStats(this._rules.GetRules());
+                this._stats = new RenamingStats(this._rules.RuleList);
                 this.Execute();
             }
         }
@@ -190,8 +181,8 @@ namespace Renamepler
 
             foreach (var dir in dirArray)
             {
-                this.CleanNumbers(); //CleanNumbers handles the continuous numbering option, so call it for every directory and it will know what to do
-                this._rules.AddFileList(dir, this.Search(dir, this._rules.GetRules())); //nested function calls...adds the file list from the result of the search from the result of GetRules()
+                this._rules.CleanNumbers(); //CleanNumbers handles the continuous numbering option, so call it for every directory and it will know what to do
+                this._rules.AddFileList(dir, this.Search(dir, this._rules.RuleList)); //nested function calls...adds the file list from the result of the search from the result of GetRules()
             }
 
             if (Settings.Default.OpenDirectory)
@@ -228,7 +219,7 @@ namespace Renamepler
         /// </summary>
         /// <param name="p_dir">the path to the directory to be searched</param>
         /// <param name="p_rules">the path to the directory to be searched</param>
-        private List<string> Search(string p_dir, Dictionary<string, string> p_rules)
+        private List<string> Search(string p_dir, List<Rule> p_rules)
         {
             bool errorcheck = false;
             var fileList = new List<string>();
@@ -239,16 +230,15 @@ namespace Renamepler
                 
                 foreach (var rule in p_rules)
                 {
-                    var match = Regex.Match(Path.GetFileName(file), rule.Key);
+                    var match = Regex.Match(Path.GetFileName(file), rule.FindPattern);
                     if (match.Success)
                     {
-                        this._stats.Found(rule.Key);
-                        var newName = rule.Value;
-                        if (this._numberedNames.Keys.Contains(rule.Value))
+                        this._stats.Found(rule.FindPattern);
+                        var newName = rule.RenamingPattern;
+                        if (rule.Numbered)
                         {
                             var numMatch = Regex.Match(newName, "#+");
-                            newName = newName.Replace(numMatch.Value, (this._numberedNames[rule.Value].Value.Value + 1).ToString("D" + this._numberedNames[rule.Value].Value.Key.ToString()));
-                            this._numberedNames[rule.Value] = new KeyValuePair<bool, KeyValuePair<int, int>>(this._numberedNames[rule.Value].Key, new KeyValuePair<int, int>(this._numberedNames[rule.Value].Value.Key, this._numberedNames[rule.Value].Value.Value + 1));
+                            newName = newName.Replace(numMatch.Value, rule.NextNumber.ToString("D" + rule.NumberLength.ToString()));
                         }
                         try {
                             if (!Settings.Default.CopyFirst)
@@ -259,7 +249,7 @@ namespace Renamepler
                         catch { errorcheck = true; }
                         if (!errorcheck)
                         {
-                            this._stats.Renamed(rule.Key, newName, file);
+                            this._stats.Renamed(rule.FindPattern, newName, file);
                             fileList.Add(file);
                         }
                         errorcheck = false;
@@ -272,7 +262,7 @@ namespace Renamepler
 
         //NOT IMPLEMENTED################################
         /// <summary>
-        /// Searches the specified directory using the specified rule.
+        /// Searches the specified directory using the specified rule. (Not yet implemented)
         /// </summary>
         /// <param name="p_dir">the path to the directory to be searched</param>
         /// <param name="p_rule">the rule to use while searching</param>
@@ -294,20 +284,21 @@ namespace Renamepler
             }
         }
 
+        //DEPRECATED#############################################################
         /// <summary>
-        /// Cleans any rules that do not want continuous numbering across directories.
+        /// Cleans any rules that do not want continuous numbering across directories. (Deprecated in favor of RuleSet.CleanNumbers())
         /// </summary>
-        private void CleanNumbers()
-        {
-            List<string> toClean = new List<string>();
+        //private void CleanNumbers()
+        //{
+        //    List<string> toClean = new List<string>();
 
-            foreach (var pair in this._numberedNames)
-                if (!pair.Value.Key)
-                    toClean.Add(pair.Key);
+        //    foreach (var pair in this._numberedNames)
+        //        if (!pair.Value.Key)
+        //            toClean.Add(pair.Key);
 
-            foreach (var key in toClean)
-                this._numberedNames[key] = new KeyValuePair<bool,KeyValuePair<int,int>>(this._numberedNames[key].Key, new KeyValuePair<int,int>(this._numberedNames[key].Value.Key, 0));
-        }
+        //    foreach (var key in toClean)
+        //        this._numberedNames[key] = new KeyValuePair<bool,KeyValuePair<int,int>>(this._numberedNames[key].Key, new KeyValuePair<int,int>(this._numberedNames[key].Value.Key, 0));
+        //}
 
         private void optionsButton_Click(object sender, EventArgs e)
         {
@@ -332,13 +323,9 @@ namespace Renamepler
                         goto Saving;
                     if (this._rules.SetName.Equals("Unnamed")) //Set the name if it hasn't been
                         this._rules.SetName = saveLoc.ToString();
-                    //The rules and numbered rules objects will both be written currently, until the numbered rules are refactored into RuleSet
                     var formatter = new BinaryFormatter();
                     var writer = new FileStream(_appData + Path.DirectorySeparatorChar + saveLoc.ToString() + "_rules.bin", FileMode.Create, FileAccess.Write);
                     formatter.Serialize(writer, this._rules);
-                    writer.Close();
-                    writer = new FileStream(_appData + Path.DirectorySeparatorChar + saveLoc.ToString() + "_numbered.bin", FileMode.Create, FileAccess.Write);
-                    formatter.Serialize(writer, this._numberedNames);
                     writer.Close();
                 }
 
@@ -356,14 +343,10 @@ namespace Renamepler
 
             if ((loadResult == DialogResult.OK) && (this._rules.IsEmpty() || (Settings.Default.AskBeforeLoad && (MessageBox.Show("Are you sure you want to load these rules?  This action will overwrite all rules currently loaded.", "Overwrite Warning", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)) || !Settings.Default.AskBeforeLoad))
             {
-                //Right now we have to deserialize both objects, ideally this will not be the case after numbered rules are refactored into RuleSet
                 var formatter = new BinaryFormatter();
                 var reader = new FileStream(_appData + Path.DirectorySeparatorChar + loadLoc.ToString() + "_rules.bin", FileMode.Open, FileAccess.Read);
                 this._rules = (RuleSet)formatter.Deserialize(reader);
                 this.ruleBox.Text = this._rules.ToString();
-                reader.Close();
-                reader = new FileStream(_appData + Path.DirectorySeparatorChar + loadLoc.ToString() + "_numbered.bin", FileMode.Open, FileAccess.Read);
-                this._numberedNames = (Dictionary<string, KeyValuePair<bool, KeyValuePair<int, int>>>)formatter.Deserialize(reader);
                 reader.Close();
             }
             loadWindow.Dispose();
