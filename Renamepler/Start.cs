@@ -36,13 +36,15 @@ namespace Renamepler
     //  REQUIRES: If no extension is present in the pattern, retain the previous extension
     //8. Editing of rules
     //  REQUIRES: New editing form
+    //9. Add "ignore" rules to the app
 
     //REFACTORING:
     //1. Move the name sanitization (regex, default name check, etc.) to a static function
     //  REQUIRES: New function
 
     //BUGS:
-
+    //1. Resizing the main window is not fluid
+    //  REQUIRES: Resizing text box?
     public partial class Start : Form
     {
         public static string _appData;
@@ -105,29 +107,6 @@ namespace Renamepler
             dialog.Dispose();
         }
 
-        //DEPRECATED#################################
-        /// <summary>
-        /// Adds a renaming rule to the rule set. (Deprecated in favor of passing ruleset by reference to AddRuleDialog)
-        /// </summary>
-        /// <param name="p_find">string to find matching names</param>
-        /// <param name="p_rename">string containing renaming format</param>
-        /// <param name="p_continuous">boolean indicating continuous numbering pattern</param>
-        //public int AddRule(string p_find, string p_rename, bool p_continuous)
-        //{
-        //    var check = this._rules.AddRule(p_find, p_rename);
-
-        //    if (check == 0)
-        //    {
-        //        this.ruleBox.Text = this._rules.ToString();
-        //        if (p_rename.Contains('#'))
-        //        {
-        //            _numberedNames.Add(p_rename, new KeyValuePair<bool, KeyValuePair<int, int>>(p_continuous, new KeyValuePair<int,int>(p_rename.Count(s => s == '#'), 0)));
-        //        }
-        //    }
-
-        //    return check;
-        //}
-
         private void goButton_Click(object sender, EventArgs e)
         {
             //Give the user the option to name the rules
@@ -176,7 +155,8 @@ namespace Renamepler
         {
             List<string> dirArray = new List<string>();
             if (Settings.Default.RecursiveSearch) //Only add subdirectories if the user wants a recursive search
-                dirArray.Concat(Directory.EnumerateDirectories(_path, "*", SearchOption.AllDirectories).ToList());
+                foreach (var path in Directory.EnumerateDirectories(_path, "*", SearchOption.AllDirectories))
+                    dirArray.Add(path);
             dirArray.Add(_path);
 
             foreach (var dir in dirArray)
@@ -283,22 +263,6 @@ namespace Renamepler
                     File.Delete(file);
             }
         }
-
-        //DEPRECATED#############################################################
-        /// <summary>
-        /// Cleans any rules that do not want continuous numbering across directories. (Deprecated in favor of RuleSet.CleanNumbers())
-        /// </summary>
-        //private void CleanNumbers()
-        //{
-        //    List<string> toClean = new List<string>();
-
-        //    foreach (var pair in this._numberedNames)
-        //        if (!pair.Value.Key)
-        //            toClean.Add(pair.Key);
-
-        //    foreach (var key in toClean)
-        //        this._numberedNames[key] = new KeyValuePair<bool,KeyValuePair<int,int>>(this._numberedNames[key].Key, new KeyValuePair<int,int>(this._numberedNames[key].Value.Key, 0));
-        //}
 
         private void optionsButton_Click(object sender, EventArgs e)
         {
