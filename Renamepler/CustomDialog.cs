@@ -43,7 +43,7 @@ namespace Renamepler
         /// <summary>
         /// The text displayed by the dialog.
         /// </summary>
-        public string MessageText
+        public string DialogText
         {
             get { return this.textBox.Text; }
             set { this.textBox.Text = value; }
@@ -52,7 +52,7 @@ namespace Renamepler
         /// <summary>
         /// The name displayed in the title bar of the dialog.
         /// </summary>
-        public string MessageName
+        public string DialogName
         {
             get { return this.Text; }
             set { this.Text = value; }
