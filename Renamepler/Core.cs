@@ -41,15 +41,13 @@ namespace Renamepler
     //REFACTORING:
     //1. Move the name sanitization (regex, default name check, etc.) to a static function
     //  REQUIRES: New function
-    //3. Get rid of SaveRulesWindow, use CustomDialog
-    //  REQUIRES: SaveRulesWindow logic moved into Start
 
     //BUGS:
 
     public partial class Core : Form
     {
         public static string _appData;
-        private string _path;
+        private string _path = "";
         private RuleSet _rules;
         private RenamingStats _stats;
 
@@ -75,18 +73,18 @@ namespace Renamepler
             {
                 Settings.Default.LastDirectory = folderBrowserDialog.SelectedPath;
                 Settings.Default.Save();
-                this.directoryBox.Text = folderBrowserDialog.SelectedPath;
-                this._path = folderBrowserDialog.SelectedPath;
-                this.secondPanel.Enabled = true;
                 this.ruleBox.Text = this._rules.ToString();
 
-                //Confirms clear if the rules actually exist
-                if (!this._rules.IsEmpty() && (MessageBox.Show("Do you want to clear all current rules?", "Clear Rules", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes))
+                //Confirms clear if the rules actually exist and if the directory was not empty previously
+                if (!this._rules.IsEmpty() && !this._path.Equals("") && (MessageBox.Show("Do you want to clear all current rules?", "Clear Rules", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes))
                 {
                     //New rules and numbered names objects
                     this._rules = new RuleSet();
                     this.ruleBox.Text = this._rules.ToString();
                 }
+
+                this.directoryBox.Text = folderBrowserDialog.SelectedPath;
+                this._path = folderBrowserDialog.SelectedPath;
             }
         }
 
@@ -110,6 +108,15 @@ namespace Renamepler
 
         private void goButton_Click(object sender, EventArgs e)
         {
+            if (this._path.Equals(""))
+                this.dirDialogButton_Click(sender, e);
+            if (this._path.Equals(""))
+                goto Quit;
+
+            if (this._rules.IsEmpty() && MessageBox.Show("No rules have been entered!", "Error", MessageBoxButtons.OK) != DialogResult.No)
+                goto Quit;
+
+
             //Give the user the option to name the rules
             //This might be phased out later when there are RuleSet-specific options (including naming, hopefully)
             //We just want the user to be comfortable with naming rule sets, to allow for a more object-oriented paradigm with the RuleSet object in the future
@@ -147,6 +154,8 @@ namespace Renamepler
                 this._stats = new RenamingStats(this._rules.RuleList);
                 this.Execute();
             }
+        Quit:
+            return;
         }
 
         /// <summary>

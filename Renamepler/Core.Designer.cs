@@ -143,7 +143,6 @@
             this.secondPanel.Controls.Add(this.clearButton);
             this.secondPanel.Controls.Add(this.ruleBox);
             this.secondPanel.Controls.Add(this.ruleButton);
-            this.secondPanel.Enabled = false;
             this.secondPanel.Location = new System.Drawing.Point(0, 34);
             this.secondPanel.Name = "secondPanel";
             this.secondPanel.Size = new System.Drawing.Size(524, 190);
