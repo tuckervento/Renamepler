@@ -1,6 +1,6 @@
 ﻿namespace Renamepler
 {
-    partial class Start
+    partial class Core
     {
         /// <summary>
         /// Required designer variable.

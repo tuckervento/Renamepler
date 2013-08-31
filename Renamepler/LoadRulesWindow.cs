@@ -40,7 +40,7 @@ namespace Renamepler
                     break;
             }
 
-            var list = Directory.GetFiles(Start._appData, "*" + typeString + ".bin");
+            var list = Directory.GetFiles(Core._appData, "*" + typeString + ".bin");
 
             foreach (var item in list)
                 this.rulesListBox.Items.Add(Path.GetFileNameWithoutExtension(item).Replace(typeString, ""));

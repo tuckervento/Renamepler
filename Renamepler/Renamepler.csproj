@@ -58,6 +58,12 @@
     <Compile Include="CustomDialog.Designer.cs">
       <DependentUpon>CustomDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="CustomListDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CustomListDialog.Designer.cs">
+      <DependentUpon>CustomListDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="HelpWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -91,11 +97,11 @@
     <Compile Include="SaveRulesWindow.Designer.cs">
       <DependentUpon>SaveRulesWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="Start.cs">
+    <Compile Include="Core.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Start.Designer.cs">
-      <DependentUpon>Start.cs</DependentUpon>
+    <Compile Include="Core.Designer.cs">
+      <DependentUpon>Core.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -110,6 +116,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="CustomDialog.resx">
       <DependentUpon>CustomDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CustomListDialog.resx">
+      <DependentUpon>CustomListDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HelpWindow.resx">
       <DependentUpon>HelpWindow.cs</DependentUpon>
@@ -135,8 +144,8 @@
     <EmbeddedResource Include="SaveRulesWindow.resx">
       <DependentUpon>SaveRulesWindow.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Start.resx">
-      <DependentUpon>Start.cs</DependentUpon>
+    <EmbeddedResource Include="Core.resx">
+      <DependentUpon>Core.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="StatsWindow.resx">
       <DependentUpon>StatsWindow.cs</DependentUpon>
