@@ -85,12 +85,6 @@
     <Compile Include="RenamingStats.cs" />
     <Compile Include="Rule.cs" />
     <Compile Include="RuleSet.cs" />
-    <Compile Include="SaveRulesWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SaveRulesWindow.Designer.cs">
-      <DependentUpon>SaveRulesWindow.cs</DependentUpon>
-    </Compile>
     <Compile Include="Core.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -132,9 +126,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="SaveRulesWindow.resx">
-      <DependentUpon>SaveRulesWindow.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Core.resx">
       <DependentUpon>Core.cs</DependentUpon>
     </EmbeddedResource>

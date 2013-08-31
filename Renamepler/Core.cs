@@ -277,19 +277,37 @@ namespace Renamepler
                 MessageBox.Show("There are no rules to save!", "Error", MessageBoxButtons.OK);
             else
             {
-                var saveLoc = new StringBuilder();
-                var saveWindow = new SaveRulesWindow(ref saveLoc, this._rules.SetName);
+                var saveWindow = new CustomDialog("Save Rules As...", "[Enter a name for this set of rules]", "OK", "Cancel");
+                saveWindow.EnableEditing = true;
             Saving: //Jump here if the file already exists but they don't want to overwrite
-                var saveResult = saveWindow.ShowDialog();
 
-                if (saveResult == DialogResult.OK)
+                if (saveWindow.ShowDialog() == DialogResult.OK)
                 {
-                    if (File.Exists(_appData + Path.DirectorySeparatorChar + saveLoc.ToString() + "_rules.bin") && (MessageBox.Show("A rule set with this name already exists.  Do you want to overwrite it?", "Confirm Overwrite", MessageBoxButtons.YesNo) == DialogResult.No))
+                    var named = saveWindow.DialogText;
+                    var regex = new Regex("[" + Regex.Escape(new string(System.IO.Path.GetInvalidPathChars())) + "]");
+
+                    if (named.Equals("[Enter a name for this set of rules]"))
+                    {
+                        MessageBox.Show("Enter a name for this set of rules!", "Error: No name!", MessageBoxButtons.OK);
+                        goto Saving;
+                    }
+                    else if (regex.IsMatch(named))
+                    {
+                        MessageBox.Show("Invalid name!  Please try again.", "Error: Invalid name", MessageBoxButtons.OK);
+                        goto Saving;
+                    }
+                    else if (named.Equals(""))
+                    {
+                        MessageBox.Show("Your name can not be empty!  Please try again.", "Error: Invalid name", MessageBoxButtons.OK);
+                        goto Saving;
+                    }
+
+                    if (File.Exists(_appData + Path.DirectorySeparatorChar + named + "_rules.bin") && (MessageBox.Show("A rule set with this name already exists.  Do you want to overwrite it?", "Confirm Overwrite", MessageBoxButtons.YesNo) == DialogResult.No))
                         goto Saving;
                     if (this._rules.SetName.Equals("Unnamed")) //Set the name if it hasn't been
-                        this._rules.SetName = saveLoc.ToString();
+                        this._rules.SetName = named;
                     var formatter = new BinaryFormatter();
-                    var writer = new FileStream(_appData + Path.DirectorySeparatorChar + saveLoc.ToString() + "_rules.bin", FileMode.Create, FileAccess.Write);
+                    var writer = new FileStream(_appData + Path.DirectorySeparatorChar + named + "_rules.bin", FileMode.Create, FileAccess.Write);
                     formatter.Serialize(writer, this._rules);
                     writer.Close();
                 }
