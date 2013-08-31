@@ -35,16 +35,12 @@ namespace Renamepler
     //7. Relaxed renaming pattern system
     //  REQUIRES: If no extension is present in the pattern, retain the previous extension
     //8. Editing of rules
-    //  REQUIRES: New editing form
+    //  REQUIRES: Use CustomListDialog
     //9. Add "ignore" rules to the app
 
     //REFACTORING:
     //1. Move the name sanitization (regex, default name check, etc.) to a static function
     //  REQUIRES: New function
-    //2. Create custom list dialog window, similar to CustomDialog
-    //  REQUIRES: Inherit from CustomDialog
-    //  REQUIRES: Populate list with any source
-    //  REQUIRES: Usage in Load
     //3. Get rid of SaveRulesWindow, use CustomDialog
     //  REQUIRES: SaveRulesWindow logic moved into Start
 
@@ -307,18 +303,22 @@ namespace Renamepler
 
         private void loadRulesButton_Click(object sender, EventArgs e)
         {
-            var loadLoc = new StringBuilder();
-            var loadWindow = new LoadRulesWindow(ref loadLoc, 0);
-            var loadResult = loadWindow.ShowDialog();
+            var list = new List<string>();
 
-            if ((loadResult == DialogResult.OK) && (this._rules.IsEmpty() || (Settings.Default.AskBeforeLoad && (MessageBox.Show("Are you sure you want to load these rules?  This action will overwrite all rules currently loaded.", "Overwrite Warning", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)) || !Settings.Default.AskBeforeLoad))
+            foreach (var item in Directory.GetFiles(Core._appData, "*_rules.bin"))
+                list.Add(Path.GetFileNameWithoutExtension(item).Replace("_rules", ""));
+
+            var loadWindow = new CustomListDialog("Load...", list, "OK", "Cancel");
+
+            if ((loadWindow.ShowDialog() == DialogResult.OK) && (this._rules.IsEmpty() || (Settings.Default.AskBeforeLoad && (MessageBox.Show("Are you sure you want to load these rules?  This action will overwrite all rules currently loaded.", "Overwrite Warning", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)) || !Settings.Default.AskBeforeLoad))
             {
                 var formatter = new BinaryFormatter();
-                var reader = new FileStream(_appData + Path.DirectorySeparatorChar + loadLoc.ToString() + "_rules.bin", FileMode.Open, FileAccess.Read);
+                var reader = new FileStream(_appData + Path.DirectorySeparatorChar + loadWindow.SelectedItem + "_rules.bin", FileMode.Open, FileAccess.Read);
                 this._rules = (RuleSet)formatter.Deserialize(reader);
                 this.ruleBox.Text = this._rules.ToString();
                 reader.Close();
             }
+
             loadWindow.Dispose();
         }
 
@@ -333,12 +333,17 @@ namespace Renamepler
 
         private void loadPreviousButton_Click(object sender, EventArgs e)
         {
-            var loadLoc = new StringBuilder();
+            var list = new List<string>();
 
-            if ((new LoadRulesWindow(ref loadLoc, 1)).ShowDialog() == DialogResult.OK)
+            foreach (var item in Directory.GetFiles(Core._appData, "*_stats.bin"))
+                list.Add(Path.GetFileNameWithoutExtension(item).Replace("_stats", ""));
+
+            var loadStatsWindow = new CustomListDialog("Load...", list, "OK", "Cancel");
+ 
+            if (loadStatsWindow.ShowDialog() == DialogResult.OK)
             {
                 var formatter = new BinaryFormatter();
-                var reader = new FileStream(_appData + Path.DirectorySeparatorChar + loadLoc.ToString() + "_stats.bin", FileMode.Open, FileAccess.Read);
+                var reader = new FileStream(_appData + Path.DirectorySeparatorChar + loadStatsWindow.SelectedItem + "_stats.bin", FileMode.Open, FileAccess.Read);
                 var statsWindow = new StatsWindow((RenamingStats)formatter.Deserialize(reader));
                 statsWindow.Show();
                 reader.Close();
