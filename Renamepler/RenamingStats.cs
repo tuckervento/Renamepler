@@ -34,9 +34,9 @@ namespace Renamepler
             }
 
             /// <summary>
-            /// The number of files searched.
+            /// The list of old filenames (key is new name, value is previous name).
             /// </summary>
-            public int TotalSearched { get { return this._searched; } }
+            public Dictionary<string, string> OldFilenames { get { return this._oldNames; } }
 
             /// <summary>
             /// The number of matches found.
@@ -49,16 +49,18 @@ namespace Renamepler
             public int TotalRenamed { get { return this._renamed; } }
 
             /// <summary>
-            /// The list of old filenames (key is new name, value is previous name).
+            /// The number of files searched.
             /// </summary>
-            public Dictionary<string, string> OldFilenames { get { return this._oldNames; } }
+            public int TotalSearched { get { return this._searched; } }
 
             /// <summary>
-            /// Increments the number of files searched.
+            /// Adds an old name to the records.
             /// </summary>
-            public void Searched()
+            /// <param name="p_name">new name of the file</param>
+            /// <param name="p_oldName"> previous name of the file</param>
+            public void AddOldName(string p_name, string p_oldName)
             {
-                this._searched++;
+                this._oldNames.Add(p_name, p_oldName);
             }
 
             /// <summary>
@@ -78,13 +80,11 @@ namespace Renamepler
             }
 
             /// <summary>
-            /// Adds an old name to the records.
+            /// Increments the number of files searched.
             /// </summary>
-            /// <param name="p_name">new name of the file</param>
-            /// <param name="p_oldName"> previous name of the file</param>
-            public void AddOldName(string p_name, string p_oldName)
+            public void Searched()
             {
-                this._oldNames.Add(p_name, p_oldName);
+                this._searched++;
             }
         }
 
@@ -105,12 +105,33 @@ namespace Renamepler
         }
 
         /// <summary>
-        /// Increments the number of files searched.
+        /// A list of the rules used in this search.
         /// </summary>
-        public void Searched()
+        public List<string> RuleList
         {
-            this._overall.Searched();
+            get { return this._perRule.Keys.ToList<string>(); }
+            set { }
         }
+
+        /// <summary>
+        /// The list of old filenames. (key is new name, value is old name)
+        /// </summary>
+        public Dictionary<string, string> OldFilenames { get { return this._overall.OldFilenames; } }
+
+        /// <summary>
+        /// The total number of matches found.
+        /// </summary>
+        public int TotalFound { get { return this._overall.TotalFound; } }
+
+        /// <summary>
+        /// The total number of files renamed.
+        /// </summary>
+        public int TotalRenamed { get { return this._overall.TotalRenamed; } }
+
+        /// <summary>
+        /// The total number of files searched.
+        /// </summary>
+        public int TotalSearched { get { return this._overall.TotalSearched; } }
 
         /// <summary>
         /// Increments the number of matches found using a given search string.
@@ -123,6 +144,33 @@ namespace Renamepler
         }
 
         /// <summary>
+        /// Returns the list of old filenames. (key is new name, value is old name)
+        /// </summary>
+        /// <param name="p_find">the search pattern you want statistics for</param>
+        public Dictionary<string, string> GetFilenamesForRule(string p_find)
+        {
+            return this._perRule[p_find].OldFilenames;
+        }
+
+        /// <summary>
+        /// Returns the number of files matched for the given search pattern .
+        /// </summary>
+        /// <param name="p_find">the search pattern you want statistics for</param>
+        public int GetFoundForRule(string p_find)
+        {
+            return this._perRule[p_find].TotalFound;
+        }
+
+        /// <summary>
+        /// Returns the number of files renamed for the given search pattern.
+        /// </summary>
+        /// <param name="p_find">the search pattern you want statistics for</param>
+        public int GetRenamedForRule(string p_find)
+        {
+            return this._perRule[p_find].TotalRenamed;
+        }
+
+        /// <summary>
         /// Increments the number of matches renamed using a given renaming pattern.
         /// </summary>
         /// <param name="p_rename">the search pattern used</param>
@@ -130,15 +178,6 @@ namespace Renamepler
         {
             this._overall.Renamed();
             this._perRule[p_find].Renamed();
-        }
-
-        /// <summary>
-        /// A list of the rules used in this search.
-        /// </summary>
-        public List<string> RuleList
-        {
-            get { return this._perRule.Keys.ToList<string>(); }
-            set { }
         }
 
         /// <summary>
@@ -155,50 +194,11 @@ namespace Renamepler
         }
 
         /// <summary>
-        /// The total number of files searched.
+        /// Increments the number of files searched.
         /// </summary>
-        public int TotalSearched { get { return this._overall.TotalSearched; } }
-
-        /// <summary>
-        /// The total number of matches found.
-        /// </summary>
-        public int TotalFound { get { return this._overall.TotalFound; } }
-
-        /// <summary>
-        /// The total number of files renamed.
-        /// </summary>
-        public int TotalRenamed { get { return this._overall.TotalRenamed; } }
-
-        /// <summary>
-        /// The list of old filenames. (key is new name, value is old name)
-        /// </summary>
-        public Dictionary<string, string> OldFilenames { get { return this._overall.OldFilenames; } }
-
-        /// <summary>
-        /// Returns the number of files matched for the given search pattern .
-        /// </summary>
-        /// <param name="p_find">the search pattern you want statistics for</param>
-        public int FoundForRule(string p_find)
+        public void Searched()
         {
-            return this._perRule[p_find].TotalFound;
-        }
-
-        /// <summary>
-        /// Returns the number of files renamed for the given search pattern.
-        /// </summary>
-        /// <param name="p_find">the search pattern you want statistics for</param>
-        public int RenamedForRule(string p_find)
-        {
-            return this._perRule[p_find].TotalRenamed;
-        }
-
-        /// <summary>
-        /// Returns the list of old filenames. (key is new name, value is old name)
-        /// </summary>
-        /// <param name="p_find">the search pattern you want statistics for</param>
-        public Dictionary<string, string> FilenamesForRule(string p_find)
-        {
-            return this._perRule[p_find].OldFilenames;
+            this._overall.Searched();
         }
     }
 }

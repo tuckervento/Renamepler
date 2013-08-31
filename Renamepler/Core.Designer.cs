@@ -44,6 +44,7 @@
             this.loadRulesButton = new System.Windows.Forms.Button();
             this.saveRulesButton = new System.Windows.Forms.Button();
             this.optionsButton = new System.Windows.Forms.Button();
+            this.editButton = new System.Windows.Forms.Button();
             this.directoryPanel.SuspendLayout();
             this.secondPanel.SuspendLayout();
             this.SuspendLayout();
@@ -78,7 +79,7 @@
             this.ruleBox.Location = new System.Drawing.Point(12, 32);
             this.ruleBox.Name = "ruleBox";
             this.ruleBox.ReadOnly = true;
-            this.ruleBox.Size = new System.Drawing.Size(497, 123);
+            this.ruleBox.Size = new System.Drawing.Size(588, 158);
             this.ruleBox.TabIndex = 5;
             this.ruleBox.Text = "";
             this.toolTip.SetToolTip(this.ruleBox, "This is a list of all current renaming rules");
@@ -86,7 +87,7 @@
             // clearButton
             // 
             this.clearButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.clearButton.Location = new System.Drawing.Point(13, 161);
+            this.clearButton.Location = new System.Drawing.Point(58, 196);
             this.clearButton.Name = "clearButton";
             this.clearButton.Size = new System.Drawing.Size(75, 23);
             this.clearButton.TabIndex = 6;
@@ -98,7 +99,7 @@
             // goButton
             // 
             this.goButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.goButton.Location = new System.Drawing.Point(434, 3);
+            this.goButton.Location = new System.Drawing.Point(525, 3);
             this.goButton.Name = "goButton";
             this.goButton.Size = new System.Drawing.Size(75, 23);
             this.goButton.TabIndex = 7;
@@ -115,7 +116,7 @@
             this.directoryPanel.Controls.Add(this.directoryBox);
             this.directoryPanel.Location = new System.Drawing.Point(0, 3);
             this.directoryPanel.Name = "directoryPanel";
-            this.directoryPanel.Size = new System.Drawing.Size(524, 27);
+            this.directoryPanel.Size = new System.Drawing.Size(615, 27);
             this.directoryPanel.TabIndex = 1;
             // 
             // directoryBox
@@ -125,7 +126,7 @@
             this.directoryBox.Location = new System.Drawing.Point(115, 5);
             this.directoryBox.Name = "directoryBox";
             this.directoryBox.ReadOnly = true;
-            this.directoryBox.Size = new System.Drawing.Size(394, 20);
+            this.directoryBox.Size = new System.Drawing.Size(485, 20);
             this.directoryBox.TabIndex = 2;
             // 
             // secondPanel
@@ -134,6 +135,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.secondPanel.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.secondPanel.Controls.Add(this.editButton);
             this.secondPanel.Controls.Add(this.loadPreviousButton);
             this.secondPanel.Controls.Add(this.exitButton);
             this.secondPanel.Controls.Add(this.loadRulesButton);
@@ -145,13 +147,13 @@
             this.secondPanel.Controls.Add(this.ruleButton);
             this.secondPanel.Location = new System.Drawing.Point(0, 34);
             this.secondPanel.Name = "secondPanel";
-            this.secondPanel.Size = new System.Drawing.Size(524, 190);
+            this.secondPanel.Size = new System.Drawing.Size(615, 225);
             this.secondPanel.TabIndex = 4;
             // 
             // loadPreviousButton
             // 
             this.loadPreviousButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.loadPreviousButton.Location = new System.Drawing.Point(256, 161);
+            this.loadPreviousButton.Location = new System.Drawing.Point(301, 196);
             this.loadPreviousButton.Name = "loadPreviousButton";
             this.loadPreviousButton.Size = new System.Drawing.Size(131, 23);
             this.loadPreviousButton.TabIndex = 5;
@@ -163,7 +165,7 @@
             // 
             this.exitButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.exitButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.exitButton.Location = new System.Drawing.Point(434, 161);
+            this.exitButton.Location = new System.Drawing.Point(479, 196);
             this.exitButton.Name = "exitButton";
             this.exitButton.Size = new System.Drawing.Size(75, 23);
             this.exitButton.TabIndex = 10;
@@ -174,7 +176,7 @@
             // loadRulesButton
             // 
             this.loadRulesButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.loadRulesButton.Location = new System.Drawing.Point(175, 161);
+            this.loadRulesButton.Location = new System.Drawing.Point(220, 196);
             this.loadRulesButton.Name = "loadRulesButton";
             this.loadRulesButton.Size = new System.Drawing.Size(75, 23);
             this.loadRulesButton.TabIndex = 9;
@@ -185,7 +187,7 @@
             // saveRulesButton
             // 
             this.saveRulesButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.saveRulesButton.Location = new System.Drawing.Point(94, 161);
+            this.saveRulesButton.Location = new System.Drawing.Point(139, 196);
             this.saveRulesButton.Name = "saveRulesButton";
             this.saveRulesButton.Size = new System.Drawing.Size(75, 23);
             this.saveRulesButton.TabIndex = 5;
@@ -196,13 +198,23 @@
             // optionsButton
             // 
             this.optionsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.optionsButton.Location = new System.Drawing.Point(353, 3);
+            this.optionsButton.Location = new System.Drawing.Point(444, 3);
             this.optionsButton.Name = "optionsButton";
             this.optionsButton.Size = new System.Drawing.Size(75, 23);
             this.optionsButton.TabIndex = 8;
             this.optionsButton.Text = "Options";
             this.optionsButton.UseVisualStyleBackColor = true;
             this.optionsButton.Click += new System.EventHandler(this.optionsButton_Click);
+            // 
+            // editButton
+            // 
+            this.editButton.Location = new System.Drawing.Point(115, 3);
+            this.editButton.Name = "editButton";
+            this.editButton.Size = new System.Drawing.Size(75, 23);
+            this.editButton.TabIndex = 11;
+            this.editButton.Text = "Edit Rule";
+            this.editButton.UseVisualStyleBackColor = true;
+            this.editButton.Click += new System.EventHandler(this.editButton_Click);
             // 
             // Core
             // 
@@ -211,7 +223,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlDark;
             this.CancelButton = this.exitButton;
-            this.ClientSize = new System.Drawing.Size(521, 226);
+            this.ClientSize = new System.Drawing.Size(612, 261);
             this.Controls.Add(this.secondPanel);
             this.Controls.Add(this.directoryPanel);
             this.Name = "Core";
@@ -240,6 +252,7 @@
         private System.Windows.Forms.Button loadRulesButton;
         private System.Windows.Forms.Button exitButton;
         private System.Windows.Forms.Button loadPreviousButton;
+        private System.Windows.Forms.Button editButton;
     }
 }
 

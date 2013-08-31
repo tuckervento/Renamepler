@@ -12,7 +12,8 @@ namespace Renamepler
         private string _rename;
         private int _numberOfNumbers;
         private bool _numbered = false;
-        private bool _continuousNumbering = false;
+        private bool _continuousNumbering;
+        private bool _regex;
         private int _currentNumber = 0;
 
         /// <summary>
@@ -20,8 +21,9 @@ namespace Renamepler
         /// </summary>
         /// <param name="p_find">the search pattern for the rule</param>
         /// <param name="p_rename">the renaming pattern for the rule</param>
-        /// <param name="p_cont">indicating whether the numbering should be continuous through subdirectories</param>
-        public Rule(string p_find, string p_rename, bool p_cont)
+        /// <param name="p_cont">indicates whether the numbering should be continuous through subdirectories</param>
+        /// <param name="p_regex">indicates whether the search pattern is a regex</param>
+        public Rule(string p_find, string p_rename, bool p_cont, bool p_regex)
         {
             this._find = p_find;
             this._rename = p_rename;
@@ -32,30 +34,19 @@ namespace Renamepler
                 this._numberOfNumbers = this._rename.Count(s => s == '#');
             }
 
-            this._continuousNumbering = p_cont;
+            this.ContinuousNumbering = p_cont;
+            this._regex = p_regex;
         }
 
-        /// <summary>
-        /// Resets the number of the naming pattern.
-        /// </summary>
-        public void ResetNumbering() { if (!this._continuousNumbering) this._currentNumber = 0; }
-
-        /// <summary>
-        /// Indicates whether the renaming pattern contains numbering.
-        /// </summary>
-        public bool Numbered
+        private void ChangeRenamingPattern(string p_pattern)
         {
-            get { return this._numbered; }
-            set { }
-        }
+            if (p_pattern.Contains('#'))
+            {
+                this._numbered = true;
+                this._numberOfNumbers = p_pattern.Count(s => s == '#');
+            }
 
-        /// <summary>
-        /// Number of digits in the renaming pattern.
-        /// </summary>
-        public int NumberLength
-        {
-            get { return this._numberOfNumbers; }
-            set { }
+            this._rename = p_pattern;
         }
 
         /// <summary>
@@ -68,15 +59,6 @@ namespace Renamepler
         }
 
         /// <summary>
-        /// The next number in the numbering pattern.
-        /// </summary>
-        public int NextNumber
-        {
-            get { return ++this._currentNumber; }
-            set { }
-        }
-
-        /// <summary>
         /// The search pattern for this rule.
         /// </summary>
         public string FindPattern
@@ -86,12 +68,68 @@ namespace Renamepler
         }
 
         /// <summary>
+        /// Number of digits in the renaming pattern.
+        /// </summary>
+        public int NumberLength
+        {
+            get { return this._numberOfNumbers; }
+            set { }
+        }
+
+        /// <summary>
+        /// The next number in the numbering pattern.
+        /// </summary>
+        public int NextNumber
+        {
+            get { return ++this._currentNumber; }
+            set { }
+        }
+
+        /// <summary>
+        /// Indicates whether the renaming pattern contains numbering.
+        /// </summary>
+        public bool Numbered
+        {
+            get { return this._numbered; }
+            set { }
+        }
+
+        /// <summary>
+        /// Indicates whether the search pattern is a RegEx.
+        /// </summary>
+        public bool Regex
+        {
+            get { return this._regex; }
+            set { this._regex = value; }
+        }
+
+        /// <summary>
         /// The renaming pattern for this rule.
         /// </summary>
         public string RenamingPattern
         {
             get { return this._rename; }
-            set { this._rename = value; }
+            set { this.ChangeRenamingPattern(value); }
+        }
+
+        /// <summary>
+        /// Resets the number of the naming pattern.
+        /// </summary>
+        public void ResetNumbering() { if (!this._continuousNumbering) this._currentNumber = 0; }
+
+        /// <summary>
+        /// Updates the Rule with new parameters.
+        /// </summary>
+        /// <param name="p_find">the new search pattern</param>
+        /// <param name="p_rename">the new renaming pattern</param>
+        /// <param name="p_cont">indicates continuous numbering</param>
+        /// <param name="p_regex">indicates the search pattern is a regex</param>
+        public void Update(string p_find, string p_rename, bool p_cont, bool p_regex)
+        {
+            this.FindPattern = p_find;
+            this.ChangeRenamingPattern(p_rename);
+            this._regex = p_regex;
+            this.ContinuousNumbering = p_cont;
         }
     }
 }

@@ -32,13 +32,50 @@ namespace Renamepler
             this.button2.Text = p_button2;
         }
 
-        /// <summary>
-        /// The name of the dialog window.
-        /// </summary>
-        public string DialogName
+        private void button1_Click(object sender, EventArgs e)
         {
-            get { return this.Text; }
-            set { this.Text = value; }
+            this.Close();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        /// <summary>
+        /// The DialogResult returned by Button1.
+        /// </summary>
+        public DialogResult Button1Result
+        {
+            get { return this.button1.DialogResult; }
+            set { this.button1.DialogResult = value; }
+        }
+
+        /// <summary>
+        /// The text displayed on Button1.
+        /// </summary>
+        public string Button1Text
+        {
+            get { return this.button1.Text; }
+            set { this.button1.Text = value; }
+        }
+
+        /// <summary>
+        /// The DialogResult returned by Button2.
+        /// </summary>
+        public DialogResult Button2Result
+        {
+            get { return this.button2.DialogResult; }
+            set { this.button2.DialogResult = value; }
+        }
+
+        /// <summary>
+        /// The text displayed on Button2.
+        /// </summary>
+        public string Button2Text
+        {
+            get { return this.button2.Text; }
+            set { this.button2.Text = value; }
         }
 
         /// <summary>
@@ -56,58 +93,21 @@ namespace Renamepler
         }
 
         /// <summary>
+        /// The name of the dialog window.
+        /// </summary>
+        public string DialogName
+        {
+            get { return this.Text; }
+            set { this.Text = value; }
+        }
+
+        /// <summary>
         /// The currently selected item in the ComboBox.
         /// </summary>
         public string SelectedItem
         {
             get { return (string)this.comboBox.SelectedItem; }
             set { }
-        }
-
-        /// <summary>
-        /// The DialogResult returned by Button1.
-        /// </summary>
-        public DialogResult Button1Result
-        {
-            get { return this.button1.DialogResult; }
-            set { this.button1.DialogResult = value; }
-        }
-
-        /// <summary>
-        /// The DialogResult returned by Button2.
-        /// </summary>
-        public DialogResult Button2Result
-        {
-            get { return this.button2.DialogResult; }
-            set { this.button2.DialogResult = value; }
-        }
-
-        /// <summary>
-        /// The text displayed on Button1.
-        /// </summary>
-        public string Button1Text
-        {
-            get { return this.button1.Text; }
-            set { this.button1.Text = value; }
-        }
-
-        /// <summary>
-        /// The text displayed on Button2.
-        /// </summary>
-        public string Button2Text
-        {
-            get { return this.button2.Text; }
-            set { this.button2.Text = value; }
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            this.Close();
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            this.Close();
         }
     }
 }

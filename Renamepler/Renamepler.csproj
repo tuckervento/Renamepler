@@ -70,12 +70,6 @@
     <Compile Include="HelpWindow.Designer.cs">
       <DependentUpon>HelpWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="NameRulesWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="NameRulesWindow.Designer.cs">
-      <DependentUpon>NameRulesWindow.cs</DependentUpon>
-    </Compile>
     <Compile Include="OptionsWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -110,9 +104,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="HelpWindow.resx">
       <DependentUpon>HelpWindow.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="NameRulesWindow.resx">
-      <DependentUpon>NameRulesWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="OptionsWindow.resx">
       <DependentUpon>OptionsWindow.cs</DependentUpon>

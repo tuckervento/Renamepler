@@ -25,27 +25,6 @@ namespace Renamepler
             this.SetupOptions();
         }
 
-        /// <summary>
-        /// Sets up options window with gathered settings.
-        /// </summary>
-        private void SetupOptions()
-        {
-            this.confirmClearCheck.Checked = Settings.Default.AskBeforeClear;
-            this.confirmLoadCheck.Checked = Settings.Default.AskBeforeLoad;
-            this.archiveCheck.Checked = Settings.Default.SaveStatistics;
-            this.copyCheck.Checked = Settings.Default.CopyFirst;
-            this.openDirCheck.Checked = Settings.Default.OpenDirectory;
-            this.saveNameCheck.Checked = Settings.Default.OverallFilenames || Settings.Default.PerRuleFilenames;
-            this.overallFilenameCheck.Enabled = this.saveNameCheck.Checked && !Settings.Default.CopyFirst;
-            this.perRuleFilenameCheck.Enabled = this.saveNameCheck.Checked;
-            this.overallFilenameCheck.Checked = Settings.Default.OverallFilenames || Settings.Default.CopyFirst;
-            this.perRuleFilenameCheck.Checked = Settings.Default.PerRuleFilenames;
-            this.overallStatCheck.Checked = Settings.Default.OverallStats || Settings.Default.CopyFirst;
-            this.overallStatCheck.Enabled = !Settings.Default.CopyFirst;
-            this.perRuleStatCheck.Checked = Settings.Default.PerRuleStats;
-            this.recursiveCheck.Checked = Settings.Default.RecursiveSearch;
-        }
-
         private void saveButton_Click(object sender, EventArgs e)
         {
             Settings.Default.AskBeforeClear = this.confirmClearCheck.Checked;
@@ -61,27 +40,6 @@ namespace Renamepler
             Settings.Default.Save();
             this.Close();
             this.Dispose();
-        }
-
-        private void saveNameCheck_CheckedChanged(object sender, EventArgs e)
-        {
-            //Logic dictating the enabled status of the two filename options
-            this.perRuleFilenameCheck.Enabled = this.saveNameCheck.Checked && this.perRuleStatCheck.Checked;
-            this.perRuleFilenameCheck.Checked = this.saveNameCheck.Checked && this.perRuleStatCheck.Checked && Settings.Default.PerRuleFilenames;
-            this.overallFilenameCheck.Enabled = this.saveNameCheck.Checked && this.overallStatCheck.Checked;
-            this.overallFilenameCheck.Checked = this.saveNameCheck.Checked && this.overallStatCheck.Checked && Settings.Default.OverallFilenames;
-        }
-
-        private void overallStatCheck_CheckedChanged(object sender, EventArgs e)
-        {
-            this.overallFilenameCheck.Enabled = this.overallStatCheck.Checked && this.saveNameCheck.Checked;
-            this.overallFilenameCheck.Checked = this.overallStatCheck.Checked && this.saveNameCheck.Checked && Settings.Default.OverallFilenames;
-        }
-
-        private void perRuleStatCheck_CheckedChanged(object sender, EventArgs e)
-        {
-            this.perRuleFilenameCheck.Enabled = this.perRuleStatCheck.Checked && this.saveNameCheck.Checked;
-            this.perRuleFilenameCheck.Checked = this.perRuleStatCheck.Checked && this.saveNameCheck.Checked && Settings.Default.PerRuleFilenames;
         }
 
         //Contains confusing logic for the overall statistics required by the copy-and-delete feature
@@ -109,6 +67,48 @@ namespace Renamepler
             this.overallStatCheck.Enabled = !this.copyCheck.Checked;
             this.overallFilenameCheck.Checked = this.copyCheck.Checked || Settings.Default.OverallFilenames;
             this.overallFilenameCheck.Enabled = !this.copyCheck.Checked;
+        }
+
+        private void overallStatCheck_CheckedChanged(object sender, EventArgs e)
+        {
+            this.overallFilenameCheck.Enabled = this.overallStatCheck.Checked && this.saveNameCheck.Checked;
+            this.overallFilenameCheck.Checked = this.overallStatCheck.Checked && this.saveNameCheck.Checked && Settings.Default.OverallFilenames;
+        }
+
+        private void perRuleStatCheck_CheckedChanged(object sender, EventArgs e)
+        {
+            this.perRuleFilenameCheck.Enabled = this.perRuleStatCheck.Checked && this.saveNameCheck.Checked;
+            this.perRuleFilenameCheck.Checked = this.perRuleStatCheck.Checked && this.saveNameCheck.Checked && Settings.Default.PerRuleFilenames;
+        }
+
+        private void saveNameCheck_CheckedChanged(object sender, EventArgs e)
+        {
+            //Logic dictating the enabled status of the two filename options
+            this.perRuleFilenameCheck.Enabled = this.saveNameCheck.Checked && this.perRuleStatCheck.Checked;
+            this.perRuleFilenameCheck.Checked = this.saveNameCheck.Checked && this.perRuleStatCheck.Checked && Settings.Default.PerRuleFilenames;
+            this.overallFilenameCheck.Enabled = this.saveNameCheck.Checked && this.overallStatCheck.Checked;
+            this.overallFilenameCheck.Checked = this.saveNameCheck.Checked && this.overallStatCheck.Checked && Settings.Default.OverallFilenames;
+        }
+
+        /// <summary>
+        /// Sets up options window with gathered settings.
+        /// </summary>
+        private void SetupOptions()
+        {
+            this.confirmClearCheck.Checked = Settings.Default.AskBeforeClear;
+            this.confirmLoadCheck.Checked = Settings.Default.AskBeforeLoad;
+            this.archiveCheck.Checked = Settings.Default.SaveStatistics;
+            this.copyCheck.Checked = Settings.Default.CopyFirst;
+            this.openDirCheck.Checked = Settings.Default.OpenDirectory;
+            this.saveNameCheck.Checked = Settings.Default.OverallFilenames || Settings.Default.PerRuleFilenames;
+            this.overallFilenameCheck.Enabled = this.saveNameCheck.Checked && !Settings.Default.CopyFirst;
+            this.perRuleFilenameCheck.Enabled = this.saveNameCheck.Checked;
+            this.overallFilenameCheck.Checked = Settings.Default.OverallFilenames || Settings.Default.CopyFirst;
+            this.perRuleFilenameCheck.Checked = Settings.Default.PerRuleFilenames;
+            this.overallStatCheck.Checked = Settings.Default.OverallStats || Settings.Default.CopyFirst;
+            this.overallStatCheck.Enabled = !Settings.Default.CopyFirst;
+            this.perRuleStatCheck.Checked = Settings.Default.PerRuleStats;
+            this.recursiveCheck.Checked = Settings.Default.RecursiveSearch;
         }
     }
     /// <summary>

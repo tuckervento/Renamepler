@@ -32,6 +32,23 @@ namespace Renamepler
             this.statsBox.Text = this._display;
         }
 
+        private void closeButton_Click(object sender, EventArgs e)
+        {
+            this.Close();
+            this.Dispose();
+        }
+
+        private void saveButton_Click(object sender, EventArgs e)
+        {
+            var result = saveFileDialog.ShowDialog();
+
+            if (result == DialogResult.OK)
+            {
+                File.WriteAllText(saveFileDialog.FileName, this._display);
+                Process.Start(saveFileDialog.FileName);
+            }
+        }
+
         /// <summary>
         /// Sets up the statistics display string.
         /// </summary>
@@ -61,12 +78,12 @@ namespace Renamepler
 
                 foreach (var rule in p_stats.RuleList)
                 {
-                    this._display += Environment.NewLine + "RULE: " + rule + Environment.NewLine + "FILES MATCHED: " + p_stats.FoundForRule(rule) + 
-                        Environment.NewLine + "FILES RENAMED: " + p_stats.RenamedForRule(rule);
+                    this._display += Environment.NewLine + "RULE: " + rule + Environment.NewLine + "FILES MATCHED: " + p_stats.GetFoundForRule(rule) + 
+                        Environment.NewLine + "FILES RENAMED: " + p_stats.GetRenamedForRule(rule);
 
                     if (Settings.Default.PerRuleFilenames)
                     {
-                        var nameList = p_stats.FilenamesForRule(rule);
+                        var nameList = p_stats.GetFilenamesForRule(rule);
                         this._display += Environment.NewLine + Environment.NewLine + "FILE(S) RENAMED:";
 
                         foreach (var name in nameList)
@@ -74,23 +91,6 @@ namespace Renamepler
                     }
                 }
             }
-        }
-
-        private void saveButton_Click(object sender, EventArgs e)
-        {
-            var result = saveFileDialog.ShowDialog();
-
-            if (result == DialogResult.OK)
-            {
-                File.WriteAllText(saveFileDialog.FileName, this._display);
-                Process.Start(saveFileDialog.FileName);
-            }
-        }
-
-        private void closeButton_Click(object sender, EventArgs e)
-        {
-            this.Close();
-            this.Dispose();
         }
     }
 }

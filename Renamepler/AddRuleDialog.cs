@@ -16,24 +16,42 @@ namespace Renamepler
     public partial class AddRuleDialog : Form
     {
         private RuleSet _rules;
+        private bool _edit = false;
+        private Rule _rule;
 
         /// <summary>
         /// Creates a dialog allowing the user to enter renaming rules.
         /// </summary>
-        /// <param name="p_rules">current rule set</param>
-        /// <param name="p_numbered">current "numbered" rule list</param>
-        public AddRuleDialog(ref RuleSet p_rules)//, ref Dictionary<string, KeyValuePair<bool, KeyValuePair<int, int>>> p_numbered)
+        /// <param name="p_rules">the current rule set</param>
+        public AddRuleDialog(ref RuleSet p_rules)
         {
             InitializeComponent();
             this._rules = p_rules;
-            //this._numbered = p_numbered;
+        }
+
+        /// <summary>
+        /// Creates a dialog allowing the user to edit a current rule.
+        /// </summary>
+        /// <param name="p_rules">the current rule set</param>
+        /// <param name="p_rule">the rule to edit</param>
+        public AddRuleDialog(ref RuleSet p_rules, ref Rule p_rule)
+        {
+            InitializeComponent();
+            this._rules = p_rules;
+            this._edit = true;
+            this._rule = p_rule;
+            this.SetupFields();
         }
 
         private void addButton_Click(object sender, EventArgs e)
         {
             if (!regexCheck.Checked) //if the Regex option is selected, we assume that the user properly escaped any necessary characters
-                findBox.Text = Regex.Escape(findBox.Text);
-            var check = this._rules.AddRule(findBox.Text, replaceBox.Text, this.continuousCheck.Checked);
+                this.findBox.Text = Regex.Escape(this.findBox.Text);
+            int check = 99;
+            if (!this._edit)
+                check = this._rules.AddRule(this.findBox.Text, this.replaceBox.Text, this.continuousCheck.Checked, this.regexCheck.Checked);
+            else
+                check = this._rules.EditRule(ref this._rule, this.findBox.Text, this.replaceBox.Text, this.continuousCheck.Checked, this.regexCheck.Checked);
             switch (check){ //handle return value from AddRule
                 case 0:
                     this.Close();
@@ -46,7 +64,10 @@ namespace Renamepler
                     MessageBox.Show("Unable to add rules with duplicate search strings!", "Search Rule Already Exists", MessageBoxButtons.OK);
                     break;
                 case 3:
-                    MessageBox.Show("Strings must not be empty!", "Empty String Error", MessageBoxButtons.OK);
+                    MessageBox.Show("Search pattern must not be empty!", "Empty String Error", MessageBoxButtons.OK);
+                    break;
+                case 4:
+                    MessageBox.Show("Renaming pattern must not be empty!", "Empty String Error", MessageBoxButtons.OK);
                     break;
                 case -1:
                     MessageBox.Show("Preserving previous numbering systems is not currently supported.  Sorry!", "Feature Not Implemented", MessageBoxButtons.OK);
@@ -56,16 +77,27 @@ namespace Renamepler
             }
         }
 
+        private void cancelButton_Click(object sender, EventArgs e)
+        {
+            this.Close();
+            this.Dispose(); //if the user cancels we don't want to hold onto these references
+        }
+
         private void helpButton_Click(object sender, EventArgs e)
         {
             var help = new HelpWindow();
             help.ShowDialog();
         }
 
-        private void cancelButton_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Sets up the fields of AddRuleDialog using the values of _rule.
+        /// </summary>
+        private void SetupFields()
         {
-            this.Close();
-            this.Dispose(); //if the user cancels we don't want to hold onto these references
+            this.findBox.Text = this._rule.FindPattern;
+            this.replaceBox.Text = this._rule.RenamingPattern;
+            this.continuousCheck.Checked = this._rule.ContinuousNumbering;
+            this.regexCheck.Checked = this._rule.Regex;
         }
     }
 }

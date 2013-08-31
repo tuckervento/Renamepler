@@ -31,31 +31,14 @@ namespace Renamepler
             this.button2.Text = p_button2;
         }
 
-        /// <summary>
-        /// Allows the user to edit the dialog text box. (useful for custom prompts, CustomDialog does not Dispose() when closing)
-        /// </summary>
-        public bool EnableEditing
+        private void button1_Click(object sender, EventArgs e)
         {
-            get { return !this.textBox.ReadOnly; }
-            set { this.textBox.ReadOnly = !value; }
+            this.Close();
         }
 
-        /// <summary>
-        /// The text displayed by the dialog.
-        /// </summary>
-        public string DialogText
+        private void button2_Click(object sender, EventArgs e)
         {
-            get { return this.textBox.Text; }
-            set { this.textBox.Text = value; }
-        }
-
-        /// <summary>
-        /// The name displayed in the title bar of the dialog.
-        /// </summary>
-        public string DialogName
-        {
-            get { return this.Text; }
-            set { this.Text = value; }
+            this.Close();
         }
 
         /// <summary>
@@ -94,14 +77,32 @@ namespace Renamepler
             set { this.button2.Text = value; }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        /// <summary>
+        /// The name displayed in the title bar of the dialog.
+        /// </summary>
+        public string DialogName
         {
-            this.Close();
+            get { return this.Text; }
+            set { this.Text = value; }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+
+        /// <summary>
+        /// The text displayed by the dialog.
+        /// </summary>
+        public string DialogText
         {
-            this.Close();
+            get { return this.textBox.Text; }
+            set { this.textBox.Text = value; }
+        }
+
+        /// <summary>
+        /// Allows the user to edit the dialog text box. (useful for custom prompts, CustomDialog does not Dispose() when closing)
+        /// </summary>
+        public bool EnableEditing
+        {
+            get { return !this.textBox.ReadOnly; }
+            set { this.textBox.ReadOnly = !value; }
         }
     }
 }

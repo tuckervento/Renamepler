@@ -22,8 +22,6 @@ namespace Renamepler
     //3. Original numbering retention
     //  REQUIRES: A whole lot of shit I don't know
     //4. Modularity in naming rules
-    //  REQUIRES: A "Rule" object
-    //  REQUIRES: Refactoring of RuleSet to contain a collection of Rules
     //  REQUIRES: More "fields" similar to the numbering format, but for names, etc. (maybe even custom "fields"?)
     //  REQUIRES: Parsing of fields denoted by a delimiter (e.g. :NAME: or #NAME#) (NOTE: this delimiter must not be an illegal filename character because of the
     //      sanitization check in AddRuleDialog, or that check must be re-worked)
@@ -34,9 +32,7 @@ namespace Renamepler
     //  REQUIRES: Regexing the other regexes?
     //7. Relaxed renaming pattern system
     //  REQUIRES: If no extension is present in the pattern, retain the previous extension
-    //8. Editing of rules
-    //  REQUIRES: Use CustomListDialog
-    //9. Add "ignore" rules to the app
+    //8. Add "ignore" rules to the app
 
     //REFACTORING:
     //1. Move the name sanitization (regex, default name check, etc.) to a static function
@@ -64,6 +60,15 @@ namespace Renamepler
             }
         }
 
+        private void clearButton_Click(object sender, EventArgs e)
+        {
+            if (!this._rules.IsEmpty() && ((Settings.Default.AskBeforeClear && (MessageBox.Show("Are you sure you want to remove all rules?", "Clear Rules", MessageBoxButtons.OKCancel) == System.Windows.Forms.DialogResult.OK)) || !Settings.Default.AskBeforeClear))
+            {
+                this.ruleBox.Clear();
+                this._rules = new RuleSet();
+            }
+        }
+
         private void dirDialogButton_Click(object sender, EventArgs e)
         {
             folderBrowserDialog.SelectedPath = Settings.Default.LastDirectory;
@@ -88,22 +93,34 @@ namespace Renamepler
             }
         }
 
-        private void clearButton_Click(object sender, EventArgs e)
+        private void editButton_Click(object sender, EventArgs e)
         {
-            if (!this._rules.IsEmpty() && ((Settings.Default.AskBeforeClear && (MessageBox.Show("Are you sure you want to remove all rules?", "Clear Rules", MessageBoxButtons.OKCancel) == System.Windows.Forms.DialogResult.OK)) || !Settings.Default.AskBeforeClear))
+            var ruleStrings = new List<string>();
+
+            foreach (var rule in this._rules.RuleList)
+                ruleStrings.Add(rule.FindPattern);
+
+            var editSelect = new CustomListDialog("Select Rule...", ruleStrings, "OK", "Cancel");
+
+            if (editSelect.ShowDialog() == DialogResult.OK)
             {
-                this.ruleBox.Clear();
-                this._rules = new RuleSet();
+                var editing = this._rules.GetRule(editSelect.SelectedItem);
+                var editDialog = new AddRuleDialog(ref this._rules, ref editing);
+                if (editDialog.ShowDialog() == DialogResult.OK)
+                    this.ruleBox.Text = this._rules.ToString();
+
+                editDialog.Dispose();
+                editSelect.Dispose();
             }
         }
 
-        private void ruleButton_Click(object sender, EventArgs e)
+        private void exitButton_Click(object sender, EventArgs e)
         {
-            var dialog = new AddRuleDialog(ref this._rules);
-            dialog.ShowDialog();
-
-            this.ruleBox.Text = this._rules.ToString();
-            dialog.Dispose();
+            if (MessageBox.Show("Are you sure you want to quit?", "Confirm Exit", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            {
+                this.Close();
+                this.Dispose();
+            }
         }
 
         private void goButton_Click(object sender, EventArgs e)
@@ -122,7 +139,7 @@ namespace Renamepler
             //We just want the user to be comfortable with naming rule sets, to allow for a more object-oriented paradigm with the RuleSet object in the future
             if (this._rules.SetName.Equals("Unnamed") && (MessageBox.Show("Do you want to name this rule set?", "", MessageBoxButtons.YesNo) == DialogResult.Yes))
             {
-                var namingDialog = new CustomDialog( "Edit Name...", "[Enter name for this set of rules]", "OK", "Cancel");
+                var namingDialog = new CustomDialog("Edit Name...", "[Enter name for this set of rules]", "OK", "Cancel");
                 namingDialog.EnableEditing = true;
 
             //goto header in case the name is invalid
@@ -156,6 +173,124 @@ namespace Renamepler
             }
         Quit:
             return;
+        }
+
+        private void loadPreviousButton_Click(object sender, EventArgs e)
+        {
+            var list = new List<string>();
+
+            foreach (var item in Directory.GetFiles(Core._appData, "*_stats.bin"))
+                list.Add(Path.GetFileNameWithoutExtension(item).Replace("_stats", ""));
+
+            var loadStatsWindow = new CustomListDialog("Load...", list, "OK", "Cancel");
+
+            if (loadStatsWindow.ShowDialog() == DialogResult.OK)
+            {
+                var formatter = new BinaryFormatter();
+                var reader = new FileStream(_appData + Path.DirectorySeparatorChar + loadStatsWindow.SelectedItem + "_stats.bin", FileMode.Open, FileAccess.Read);
+                var statsWindow = new StatsWindow((RenamingStats)formatter.Deserialize(reader));
+                statsWindow.Show();
+                reader.Close();
+            }
+
+            loadStatsWindow.Dispose();
+        }
+
+        private void loadRulesButton_Click(object sender, EventArgs e)
+        {
+            var list = new List<string>();
+
+            foreach (var item in Directory.GetFiles(Core._appData, "*_rules.bin"))
+                list.Add(Path.GetFileNameWithoutExtension(item).Replace("_rules", ""));
+
+            var loadWindow = new CustomListDialog("Load...", list, "OK", "Cancel");
+
+            if ((loadWindow.ShowDialog() == DialogResult.OK) && (this._rules.IsEmpty() || (Settings.Default.AskBeforeLoad && (MessageBox.Show("Are you sure you want to load these rules?  This action will overwrite all rules currently loaded.", "Overwrite Warning", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)) || !Settings.Default.AskBeforeLoad))
+            {
+                var formatter = new BinaryFormatter();
+                var reader = new FileStream(_appData + Path.DirectorySeparatorChar + loadWindow.SelectedItem + "_rules.bin", FileMode.Open, FileAccess.Read);
+                this._rules = (RuleSet)formatter.Deserialize(reader);
+                this.ruleBox.Text = this._rules.ToString();
+                reader.Close();
+            }
+
+            loadWindow.Dispose();
+        }
+
+        private void optionsButton_Click(object sender, EventArgs e)
+        {
+            var optWindow = new OptionsWindow();
+            optWindow.ShowDialog();
+        }
+
+        private void ruleButton_Click(object sender, EventArgs e)
+        {
+            var dialog = new AddRuleDialog(ref this._rules);
+            
+            if (dialog.ShowDialog() == DialogResult.OK)
+                this.ruleBox.Text = this._rules.ToString();
+
+            dialog.Dispose();
+        }
+
+        private void saveRulesButton_Click(object sender, EventArgs e)
+        {
+            if (this._rules.IsEmpty())
+                MessageBox.Show("There are no rules to save!", "Error", MessageBoxButtons.OK);
+            else
+            {
+                var saveWindow = new CustomDialog("Save Rules As...", "[Enter a name for this set of rules]", "OK", "Cancel");
+                saveWindow.EnableEditing = true;
+            Saving: //Jump here if the file already exists but they don't want to overwrite
+
+                if (saveWindow.ShowDialog() == DialogResult.OK)
+                {
+                    var named = saveWindow.DialogText;
+                    var regex = new Regex("[" + Regex.Escape(new string(System.IO.Path.GetInvalidPathChars())) + "]");
+
+                    if (named.Equals("[Enter a name for this set of rules]"))
+                    {
+                        MessageBox.Show("Enter a name for this set of rules!", "Error: No name!", MessageBoxButtons.OK);
+                        goto Saving;
+                    }
+                    else if (regex.IsMatch(named))
+                    {
+                        MessageBox.Show("Invalid name!  Please try again.", "Error: Invalid name", MessageBoxButtons.OK);
+                        goto Saving;
+                    }
+                    else if (named.Equals(""))
+                    {
+                        MessageBox.Show("Your name can not be empty!  Please try again.", "Error: Invalid name", MessageBoxButtons.OK);
+                        goto Saving;
+                    }
+
+                    if (File.Exists(_appData + Path.DirectorySeparatorChar + named + "_rules.bin") && (MessageBox.Show("A rule set with this name already exists.  Do you want to overwrite it?", "Confirm Overwrite", MessageBoxButtons.YesNo) == DialogResult.No))
+                        goto Saving;
+                    if (this._rules.SetName.Equals("Unnamed")) //Set the name if it hasn't been
+                        this._rules.SetName = named;
+                    var formatter = new BinaryFormatter();
+                    var writer = new FileStream(_appData + Path.DirectorySeparatorChar + named + "_rules.bin", FileMode.Create, FileAccess.Write);
+                    formatter.Serialize(writer, this._rules);
+                    writer.Close();
+                }
+
+                saveWindow.Dispose(); //Only dispose after everything has been used
+            }
+
+            this.ruleBox.Text = this._rules.ToString();
+        }
+
+        /// <summary>
+        /// Removes specified files in the given file list Dictionary.
+        /// </summary>
+        /// <param name="p_files">the dictionary containing directories and associated files to be removed</param>
+        private void CleanupFiles(Dictionary<string, List<string>> p_files)
+        {
+            foreach (var list in p_files)
+            {
+                foreach (var file in list.Value)
+                    File.Delete(file);
+            }
         }
 
         /// <summary>
@@ -197,9 +332,10 @@ namespace Renamepler
                     var deleteDialog = new CustomDialog("Confirm Deletion", "Would you like to delete all old files?", "Yes", "No");
                     deleteDialog.Button1Result = DialogResult.Yes;
                     deleteDialog.Button2Result = DialogResult.No;
-                    
+
                     if (deleteDialog.ShowDialog() == DialogResult.Yes)
                         this.CleanupFiles(this._rules.FileListCollection);
+                    deleteDialog.Dispose();
                 }
             }
         }
@@ -259,121 +395,6 @@ namespace Renamepler
         private void Search(string p_dir, KeyValuePair<string, string> p_rule)
         {
             //to be implemented
-        }
-
-        /// <summary>
-        /// Removes specified files in the given file list Dictionary.
-        /// </summary>
-        /// <param name="p_files">the dictionary containing directories and associated files to be removed</param>
-        private void CleanupFiles(Dictionary<string, List<string>> p_files)
-        {
-            foreach (var list in p_files)
-            {
-                foreach (var file in list.Value)
-                    File.Delete(file);
-            }
-        }
-
-        private void optionsButton_Click(object sender, EventArgs e)
-        {
-            var optWindow = new OptionsWindow();
-            optWindow.ShowDialog();
-        }
-
-        private void saveRulesButton_Click(object sender, EventArgs e)
-        {
-            if (this._rules.IsEmpty())
-                MessageBox.Show("There are no rules to save!", "Error", MessageBoxButtons.OK);
-            else
-            {
-                var saveWindow = new CustomDialog("Save Rules As...", "[Enter a name for this set of rules]", "OK", "Cancel");
-                saveWindow.EnableEditing = true;
-            Saving: //Jump here if the file already exists but they don't want to overwrite
-
-                if (saveWindow.ShowDialog() == DialogResult.OK)
-                {
-                    var named = saveWindow.DialogText;
-                    var regex = new Regex("[" + Regex.Escape(new string(System.IO.Path.GetInvalidPathChars())) + "]");
-
-                    if (named.Equals("[Enter a name for this set of rules]"))
-                    {
-                        MessageBox.Show("Enter a name for this set of rules!", "Error: No name!", MessageBoxButtons.OK);
-                        goto Saving;
-                    }
-                    else if (regex.IsMatch(named))
-                    {
-                        MessageBox.Show("Invalid name!  Please try again.", "Error: Invalid name", MessageBoxButtons.OK);
-                        goto Saving;
-                    }
-                    else if (named.Equals(""))
-                    {
-                        MessageBox.Show("Your name can not be empty!  Please try again.", "Error: Invalid name", MessageBoxButtons.OK);
-                        goto Saving;
-                    }
-
-                    if (File.Exists(_appData + Path.DirectorySeparatorChar + named + "_rules.bin") && (MessageBox.Show("A rule set with this name already exists.  Do you want to overwrite it?", "Confirm Overwrite", MessageBoxButtons.YesNo) == DialogResult.No))
-                        goto Saving;
-                    if (this._rules.SetName.Equals("Unnamed")) //Set the name if it hasn't been
-                        this._rules.SetName = named;
-                    var formatter = new BinaryFormatter();
-                    var writer = new FileStream(_appData + Path.DirectorySeparatorChar + named + "_rules.bin", FileMode.Create, FileAccess.Write);
-                    formatter.Serialize(writer, this._rules);
-                    writer.Close();
-                }
-
-                saveWindow.Dispose(); //Only dispose after everything has been used
-            }
-
-            this.ruleBox.Text = this._rules.ToString();
-        }
-
-        private void loadRulesButton_Click(object sender, EventArgs e)
-        {
-            var list = new List<string>();
-
-            foreach (var item in Directory.GetFiles(Core._appData, "*_rules.bin"))
-                list.Add(Path.GetFileNameWithoutExtension(item).Replace("_rules", ""));
-
-            var loadWindow = new CustomListDialog("Load...", list, "OK", "Cancel");
-
-            if ((loadWindow.ShowDialog() == DialogResult.OK) && (this._rules.IsEmpty() || (Settings.Default.AskBeforeLoad && (MessageBox.Show("Are you sure you want to load these rules?  This action will overwrite all rules currently loaded.", "Overwrite Warning", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)) || !Settings.Default.AskBeforeLoad))
-            {
-                var formatter = new BinaryFormatter();
-                var reader = new FileStream(_appData + Path.DirectorySeparatorChar + loadWindow.SelectedItem + "_rules.bin", FileMode.Open, FileAccess.Read);
-                this._rules = (RuleSet)formatter.Deserialize(reader);
-                this.ruleBox.Text = this._rules.ToString();
-                reader.Close();
-            }
-
-            loadWindow.Dispose();
-        }
-
-        private void exitButton_Click(object sender, EventArgs e)
-        {
-            if (MessageBox.Show("Are you sure you want to quit?", "Confirm Exit", MessageBoxButtons.YesNo) == DialogResult.Yes)
-            {
-                this.Close();
-                this.Dispose();
-            }
-        }
-
-        private void loadPreviousButton_Click(object sender, EventArgs e)
-        {
-            var list = new List<string>();
-
-            foreach (var item in Directory.GetFiles(Core._appData, "*_stats.bin"))
-                list.Add(Path.GetFileNameWithoutExtension(item).Replace("_stats", ""));
-
-            var loadStatsWindow = new CustomListDialog("Load...", list, "OK", "Cancel");
- 
-            if (loadStatsWindow.ShowDialog() == DialogResult.OK)
-            {
-                var formatter = new BinaryFormatter();
-                var reader = new FileStream(_appData + Path.DirectorySeparatorChar + loadStatsWindow.SelectedItem + "_stats.bin", FileMode.Open, FileAccess.Read);
-                var statsWindow = new StatsWindow((RenamingStats)formatter.Deserialize(reader));
-                statsWindow.Show();
-                reader.Close();
-            }
         }
     }
 }
